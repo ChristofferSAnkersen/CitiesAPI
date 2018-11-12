@@ -57,10 +57,10 @@ namespace CitiesAPI.Controllers
         [Route("create")]
         public IActionResult CreateCity(City city)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             _context.Cities.Add(city);
             _context.SaveChanges();
