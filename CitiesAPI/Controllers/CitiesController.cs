@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CitiesAPI.Controllers
 {
+    //[Produces("application/xml")]
     [Route("api/[controller]")]
     [ApiController]
     public class CitiesController : ControllerBase
@@ -32,7 +33,7 @@ namespace CitiesAPI.Controllers
                 return new ObjectResult(cities);
             }
 
-            return new ObjectResult(_context.Cities.Include(x => x.Attractions));
+            return new ObjectResult(_context.Cities.Include(x => x.Attractions).ToList());
         }
 
         [HttpGet("{id}")]
@@ -50,7 +51,7 @@ namespace CitiesAPI.Controllers
                 return new ObjectResult(cities.FindAll(x => x.Id == id).Select(x => new {x.Id, x.Name, x.Description}));
             }
 
-            return new OkObjectResult(_context.Cities.Where(x => x.Id == id).Include(x => x.Attractions));
+            return new OkObjectResult(_context.Cities.Where(x => x.Id == id).Include(x => x.Attractions).ToList());
         }
         
         [HttpPost]
@@ -82,7 +83,7 @@ namespace CitiesAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("city")]
         [Route("update")]
         public IActionResult Update(City city)
         {

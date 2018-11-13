@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,15 @@ namespace CitiesAPI
                 options.UseSqlServer(connectionstring);
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddMvcOptions(options =>
+                 {
+                     options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                     options.OutputFormatters.RemoveType<TextOutputFormatter>();
+                     options.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
+                 });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -61,10 +61,10 @@ namespace CitiesAPI.Controllers
         [Route("create")]
         public IActionResult CreateAttraction(Attraction attraction)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             //attraction.CityId = id;
             _context.Attractions.Add(attraction);
