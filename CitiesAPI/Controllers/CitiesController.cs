@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitiesAPI.Models;
+using CitiesAPI.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -17,23 +18,47 @@ namespace CitiesAPI.Controllers
     {
 
         private readonly DataContext _context;
+        private CityDTO _citiesDto = new CityDTO();
+        private CityWithoutAttractionsDTO _citiesWithoutAttractionsDto = new CityWithoutAttractionsDTO();
 
         public CitiesController(DataContext context)
         {
             _context = context;
         }
-        
+
         [HttpGet]
         [Route("cities")]
         public IActionResult GetCities(bool shouldReturnAttractions = false)
         {
             List<City> cities = _context.Cities.ToList();
+            var citiesDto = new List<CityDTO>();
+            var citiesWithoutAttractionsDto = new List<CityWithoutAttractionsDTO>();
+
+            foreach (var city in cities)
+            {
+                
+                _citiesDto.Id = city.Id;
+                _citiesDto.Name = city.Name;
+                _citiesDto.Description = city.Description;
+                _citiesDto.Attractions = city.Attractions;
+                citiesDto.Add(_citiesDto);
+            };
+
             if (!shouldReturnAttractions)
             {
-                return new ObjectResult(cities);
+                foreach (var city in cities)
+                {
+                    _citiesWithoutAttractionsDto.Id = city.Id;
+                    _citiesWithoutAttractionsDto.Name = city.Name;
+                    _citiesWithoutAttractionsDto.Description = city.Description;
+                    citiesWithoutAttractionsDto.Add(_citiesWithoutAttractionsDto);
+                }
+                
+                return new ObjectResult(citiesWithoutAttractionsDto);
             }
 
-            return new ObjectResult(_context.Cities.Include(x => x.Attractions).ToList());
+            return new ObjectResult(citiesDto);
+            //return new ObjectResult(_context.Cities.Include(x => x.Attractions).ToList());
         }
 
         [HttpGet("{id}")]
