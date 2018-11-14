@@ -89,8 +89,18 @@ namespace CitiesAPI.Controllers
             }
 
             _context.Cities.Add(city);
-            _context.SaveChanges();
-            return CreatedAtAction("CreateCity", city);
+            try
+            {
+                _context.SaveChanges();
+                return CreatedAtAction("CreateCity", city);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
+            //return CreatedAtAction("CreateCity", city);
         }
 
         [HttpDelete("{id}")]
