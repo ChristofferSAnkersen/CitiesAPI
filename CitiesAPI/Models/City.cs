@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,6 +19,8 @@ namespace CitiesAPI.Models
         public string Description { get; set; }
 
         public List<Attraction> Attractions { get; set; }
-
+        
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
     }
 }
