@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CitiesAPI.Models;
 using CitiesAPI.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpGet]
+        //[Authorize]
         //[Route("cities")]
         public IActionResult GetCities(bool shouldReturnAttractions = false)
         {
@@ -62,6 +64,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         //[Route("cities/{id}")]
         public IActionResult GetCity(int id, bool shouldReturnAttractions = false)
         {

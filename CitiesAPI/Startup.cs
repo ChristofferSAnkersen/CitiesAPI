@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CitiesAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -45,6 +46,14 @@ namespace CitiesAPI
                      options.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
                  });
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "https://localhost:44356/";
+                    options.Audience = "https://localhost:44356/";
+                    //Audience does not work. Find fix!
+                });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "Cities API", Version = "v1" });
@@ -64,6 +73,8 @@ namespace CitiesAPI
                 app.UseHsts();
             }
 
+            app.UseAuthentication();
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -72,7 +83,7 @@ namespace CitiesAPI
                 //c.RoutePrefix = string.Empty;
             });
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
