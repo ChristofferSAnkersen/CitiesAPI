@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CitiesAPI.Controllers
 {
-    [Produces("application/xml")]
+    [Produces("application/xml", "application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class CitiesController : ControllerBase

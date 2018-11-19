@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CitiesAPI.Controllers
 {
-    [Produces("application/xml")]
+    [Produces("application/xml", "application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class AttractionsController : ControllerBase
