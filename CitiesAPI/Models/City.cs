@@ -9,6 +9,7 @@ namespace CitiesAPI.Models
 {
     public class City
     {
+        
         [StringLength(255)]
         public string Name { get; set; }
 

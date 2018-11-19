@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using CitiesAPI.Models;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CitiesAPI.Controllers
 {
+    [Produces("application/xml")]
     [Route("api/[controller]")]
     [ApiController]
     public class AttractionsController : ControllerBase
@@ -22,7 +24,7 @@ namespace CitiesAPI.Controllers
 
         // GET: api/Attractions
         [HttpGet("{id}")]
-        [Route("attractions/{id}")]
+        //[Route("attractions/{id}")]
         public IActionResult GetAttractions(int id)
         {
             var cities = _context.Cities.ToList();
@@ -36,7 +38,7 @@ namespace CitiesAPI.Controllers
 
         // GET: api/attraction/id
         [HttpGet("{attractionId}")]
-        [Route("attraction/{attractionId}")]
+        //[Route("attraction/{attractionId}")]
         public IActionResult GetAttraction(int attractionId)
 
         {
@@ -50,7 +52,7 @@ namespace CitiesAPI.Controllers
 
 
         [HttpGet]
-        [Route("attractions")]
+        //[Route("attractions")]
         public IActionResult GetAttractions()
         {
             var attractions = _context.Attractions.ToList();
@@ -58,7 +60,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpPost]
-        [Route("create")]
+        //[Route("create")]
         public IActionResult CreateAttraction(Attraction attraction)
         {
             if (!ModelState.IsValid)
@@ -75,7 +77,7 @@ namespace CitiesAPI.Controllers
 
 
         [HttpDelete("{id}")]
-        [Route("delete/{attractionId}")]
+        //[Route("delete/{attractionId}")]
         public IActionResult DeleteAttraction(int attractionId)
         {
             var attraction = _context.Attractions.FirstOrDefault(x => x.Id == attractionId);
@@ -91,7 +93,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        [Route("update")]
+        //[Route("update")]
         public IActionResult Update(Attraction attraction)
         {
             var oldAttraction = _context.Attractions.FirstOrDefault(x => x.Id == attraction.Id);
@@ -101,13 +103,23 @@ namespace CitiesAPI.Controllers
             }
 
             _context.Entry(oldAttraction).CurrentValues.SetValues(attraction);
-            _context.SaveChanges();
 
-            return Ok();
+            try
+            {
+                _context.SaveChanges();
+                return Ok();
+            }
+            catch (DBConcurrencyException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            
         }
 
         [HttpPatch("{id}")]
-        [Route("update/{id}")]
+        //[Route("update/{id}")]
         public IActionResult Patch(JsonPatchDocument<Attraction> attractionPatch, int id)
         {
             var oldAttraction = _context.Attractions.FirstOrDefault(x => x.Id == id);

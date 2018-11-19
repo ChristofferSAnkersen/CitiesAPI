@@ -11,15 +11,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CitiesAPI.Controllers
 {
-    //[Produces("application/xml")]
+    [Produces("application/xml")]
     [Route("api/[controller]")]
     [ApiController]
     public class CitiesController : ControllerBase
     {
 
         private readonly DataContext _context;
-        private CityDTO _citiesDto = new CityDTO();
-        private CityWithoutAttractionsDTO _citiesWithoutAttractionsDto = new CityWithoutAttractionsDTO();
+        private List<CityDTO> citiesDto = new List<CityDTO>();
+        private List<CityWithoutAttractionsDTO> citiesWithoutAttractionsDto = new List<CityWithoutAttractionsDTO>();
+
 
         public CitiesController(DataContext context)
         {
@@ -27,16 +28,14 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpGet]
-        [Route("cities")]
+        //[Route("cities")]
         public IActionResult GetCities(bool shouldReturnAttractions = false)
         {
             List<City> cities = _context.Cities.ToList();
-            var citiesDto = new List<CityDTO>();
-            var citiesWithoutAttractionsDto = new List<CityWithoutAttractionsDTO>();
 
             foreach (var city in cities)
             {
-                
+                var _citiesDto = new CityDTO();
                 _citiesDto.Id = city.Id;
                 _citiesDto.Name = city.Name;
                 _citiesDto.Description = city.Description;
@@ -48,6 +47,7 @@ namespace CitiesAPI.Controllers
             {
                 foreach (var city in cities)
                 {
+                    var _citiesWithoutAttractionsDto = new CityWithoutAttractionsDTO();
                     _citiesWithoutAttractionsDto.Id = city.Id;
                     _citiesWithoutAttractionsDto.Name = city.Name;
                     _citiesWithoutAttractionsDto.Description = city.Description;
@@ -62,7 +62,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        [Route("cities/{id}")]
+        //[Route("cities/{id}")]
         public IActionResult GetCity(int id, bool shouldReturnAttractions = false)
         {
             List<City> cities = _context.Cities.ToList();
@@ -80,7 +80,7 @@ namespace CitiesAPI.Controllers
         }
         
         [HttpPost]
-        [Route("create")]
+        //[Route("create")]
         public IActionResult CreateCity(City city)
         {
             if (!ModelState.IsValid)
@@ -104,7 +104,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Route("delete/{id}")]
+        //[Route("delete/{id}")]
         public IActionResult DeleteCity(int id)
         {
             var city = _context.Cities.FirstOrDefault(x => x.Id == id);
@@ -119,7 +119,7 @@ namespace CitiesAPI.Controllers
         }
 
         [HttpPut("city")]
-        [Route("update")]
+        //[Route("update")]
         public IActionResult Update(City city)
         {
             List<City> cities = _context.Cities.ToList();
@@ -135,13 +135,23 @@ namespace CitiesAPI.Controllers
                 return NotFound();
             }
             _context.Entry(oldCity).CurrentValues.SetValues(city);
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+                return Ok();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
+            
 
-            return Ok();
+            
         }
 
         [HttpPatch("{id}")]
-        [Route("update/{id}")]
+        //[Route("update/{id}")]
         public IActionResult Patch(JsonPatchDocument<City> cityUpdate, int id)
         {
             City oldCity = _context.Cities.FirstOrDefault(x => x.Id == id);

@@ -20,5 +20,8 @@ namespace CitiesAPI.Models
 
         [ForeignKey("Id")]
         public int CityId { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
     }
 }
