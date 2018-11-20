@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CitiesAPI.Models;
 using CitiesAPI.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -17,15 +18,13 @@ namespace CitiesAPI.Controllers
     [ApiController]
     public class CitiesController : ControllerBase
     {
-
         private readonly DataContext _context;
-        private List<CityDTO> citiesDto = new List<CityDTO>();
-        private List<CityWithoutAttractionsDTO> citiesWithoutAttractionsDto = new List<CityWithoutAttractionsDTO>();
+        private readonly IMapper _mapper;
 
-
-        public CitiesController(DataContext context)
+        public CitiesController(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -34,33 +33,12 @@ namespace CitiesAPI.Controllers
         public IActionResult GetCities(bool shouldReturnAttractions = false)
         {
             List<City> cities = _context.Cities.ToList();
-
-            foreach (var city in cities)
-            {
-                var _citiesDto = new CityDTO();
-                _citiesDto.Id = city.Id;
-                _citiesDto.Name = city.Name;
-                _citiesDto.Description = city.Description;
-                _citiesDto.Attractions = city.Attractions;
-                citiesDto.Add(_citiesDto);
-            };
-
             if (!shouldReturnAttractions)
             {
-                foreach (var city in cities)
-                {
-                    var _citiesWithoutAttractionsDto = new CityWithoutAttractionsDTO();
-                    _citiesWithoutAttractionsDto.Id = city.Id;
-                    _citiesWithoutAttractionsDto.Name = city.Name;
-                    _citiesWithoutAttractionsDto.Description = city.Description;
-                    citiesWithoutAttractionsDto.Add(_citiesWithoutAttractionsDto);
-                }
-                
-                return new ObjectResult(citiesWithoutAttractionsDto);
+                return new ObjectResult(_mapper.Map<List<CityWithoutAttractionsDTO>>(cities));
             }
 
-            return new ObjectResult(citiesDto);
-            //return new ObjectResult(_context.Cities.Include(x => x.Attractions).ToList());
+            return new ObjectResult(_mapper.Map<List<CityDTO>>(_context.Cities.Include(x => x.Attractions)));
         }
 
         [HttpGet("{id}")]
@@ -76,7 +54,7 @@ namespace CitiesAPI.Controllers
 
             if (!shouldReturnAttractions)
             {
-                return new ObjectResult(cities.FindAll(x => x.Id == id).Select(x => new {x.Id, x.Name, x.Description}));
+                return new ObjectResult(_mapper.Map<CityWithoutAttractionsDTO>(cities.FindAll(x => x.Id == id).Select(x => new {x.Id, x.Name, x.Description})));
             }
 
             return new OkObjectResult(_context.Cities.Where(x => x.Id == id).Include(x => x.Attractions).ToList());

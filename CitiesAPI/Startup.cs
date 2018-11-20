@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CitiesAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -37,15 +38,8 @@ namespace CitiesAPI
                 options.UseSqlServer(connectionstring);
             });
 
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddMvcOptions(options =>
-                 {
-                     options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-                     options.OutputFormatters.RemoveType<TextOutputFormatter>();
-                     options.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
-                 });
-
+            services.AddAutoMapper();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddXmlSerializerFormatters();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -53,7 +47,6 @@ namespace CitiesAPI
                     options.Audience = "https://localhost:44356/";
                     //Audience does not work. Find fix!
                 });
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "Cities API", Version = "v1" });
@@ -74,15 +67,12 @@ namespace CitiesAPI
             }
 
             app.UseAuthentication();
-
             app.UseSwagger();
-
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cities API");
                 //c.RoutePrefix = string.Empty;
             });
-
             app.UseHttpsRedirection();
             app.UseMvc();
         }
